@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTodo - Aufgabe erstellen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- PWA Meta-Tags -->
+    {% include '_pwa_meta_tags.html' %}
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            font-family: 'Inter', sans-serif;
+            padding: 1rem;
+        }
+
+        .compact-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(31, 41, 55, 0.1);
+            width: 100%;
+            max-width: 800px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .priority-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-high {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .badge-medium {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-low {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: var(--info);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .compact-row {
+            margin-bottom: 0.8rem;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.4em;
+            margin-right: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .user-info {
+                margin-top: 0.5rem;
+            }
+        }
+        .offline-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    margin: 0;
+    border-radius: 0;
+}
+
+.offline {
+    filter: grayscale(0.5);
+}
+
+/* Install-Button Styles */
+.install-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: none;
+}
+
+.install-button.show {
+    display: block;
+}
+    </style>
+</head>
+<body>
+
+<div class="compact-card">
+    <div class="card-header">
+        <h2><i class="fas fa-plus-circle me-2"></i>Neue Aufgabe</h2>
+        {% if user.is_authenticated %}
+        <div class="user-info">
+            <span>Angemeldet als <strong>{{ user.username }}</strong></span>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Abmelden
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="row compact-row">
+                <div class="col-md-8">
+                    <label for="id_title" class="form-label">Titel*</label>
+                    <input type="text" name="title" id="id_title" class="form-control" placeholder="Aufgabenbeschreibung" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="id_category" class="form-label">Kategorie*</label>
+                    <select name="category" id="id_category" class="form-select" required>
+                        <option value="Arbeit">👨💻 Arbeit</option>
+                        <option value="Haushalt">🏠 Haushalt</option>
+                        <option value="Einkaufen">🛒 Einkaufen</option>
+                        <option value="Gesundheit">⚕️ Gesundheit</option>
+                        <option value="Finanzen">💰 Finanzen</option>
+                        <option value="Bildung">📚 Bildung</option>
+                        <option value="Familie">👪 Familie</option>
+                        <option value="Freizeit">🎭 Freizeit</option>
+                        <option value="Sport">🏋️ Sport</option>
+                        <option value="Sonstiges" selected>✏️ Sonstiges</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="row compact-row">
+                <div class="col-md-4">
+                    <label for="id_priority" class="form-label">Priorität*</label>
+                    <select name="priority" id="id_priority" class="form-select" required>
+                        <option value="low">Niedrig</option>
+                        <option value="medium" selected>Mittel</option>
+                        <option value="high">Hoch</option>
+                    </select>
+                    <div class="mt-1">
+                        <span id="priority-badge" class="priority-badge badge-medium">
+                            <i class="fas fa-arrow-right me-1"></i> Mittel
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="id_due_date" class="form-label">Datum*</label>
+                    <input type="date" name="due_date" id="id_due_date" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="id_due_time" class="form-label">Uhrzeit*</label>
+                    <input type="time" name="due_time" id="id_due_time" class="form-control" required value="12:00">
+                </div>
+            </div>
+<div class="row align-items-center">
+    <!-- Zeitauswahl (50% Breite) -->
+    <div class="col-md-4 col-6">
+        <label for="id_due_time" class="form-label">Erinnerung*</label>
+        <input type="time" name="due_time" id="id_due_time" class="form-control" required value="12:00">
+    </div>
+
+    <!-- Switch-Button (50% Breite) -->
+    <div class="col-md-4 col-6">
+        <div class="form-check form-switch ps-0">
+            <div class="d-flex align-items-center">
+                <input class="form-check-input ms-0 me-2" type="checkbox" id="id_email_notification" name="email_notification" checked>
+                <label class="form-check-label" for="id_email_notification">
+                    <i class="fas fa-envelope me-1"></i>E-Mail senden
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional: Zweiter Switch für Push (33% Breite) -->
+    <div class="col-md-4 col-6 mt-md-0 mt-2">
+        <div class="form-check form-switch ps-0">
+            <div class="d-flex align-items-center">
+                <input class="form-check-input ms-0 me-2" type="checkbox" id="id_push_notification" name="push_notification" checked>
+                <label class="form-check-label" for="id_push_notification">
+                    <i class="fas fa-bell me-1"></i>Push
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div class="row mt-3">
+                <div class="col-12 d-flex justify-content-between">
+                    <a href="{% url 'alle_aufgaben' %}" class="btn text-white" style="background: linear-gradient(135deg, #4b5563, #6b7280);">
+    <i class="fas fa-tasks me-2"></i>Alle Aufgaben
+</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Speichern
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Priority badge update
+    document.getElementById('id_priority').addEventListener('change', function() {
+        const badge = document.getElementById('priority-badge');
+        badge.className = 'priority-badge';
+
+        if (this.value === 'high') {
+            badge.classList.add('badge-high');
+            badge.innerHTML = '<i class="fas fa-arrow-up me-1"></i> Hoch';
+        } else if (this.value === 'medium') {
+            badge.classList.add('badge-medium');
+            badge.innerHTML = '<i class="fas fa-arrow-right me-1"></i> Mittel';
+        } else {
+            badge.classList.add('badge-low');
+            badge.innerHTML = '<i class="fas fa-arrow-down me-1"></i> Niedrig';
+        }
+    });
+
+    // Set default date to today
+    document.getElementById('id_due_date').valueAsDate = new Date();
+</script>
+<button id="installButton" class="btn btn-primary install-button">
+    <i class="fas fa-download me-2"></i>App installieren
+</button>
+
+<script>
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installButton = document.getElementById('installButton');
+    installButton.classList.add('show');
+
+    installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('App installiert');
+            }
+            deferredPrompt = null;
+            installButton.classList.remove('show');
+        }
+    });
+});
+</script>
+<!-- Service Worker Registration -->
+    {% include '_service_worker_registration.html' %}
+</body>
+</html>

@@ -1,0 +1,755 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Aufgabenverwaltung - Ihr persönlicher Planer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{% static 'tasks/images/icon.png' %}">
+    {% include '_pwa_meta_tags.html' %}
+
+    <style>
+        /* Grundstil für die Seite */
+        body {
+            transition: background 0.5s ease;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Standard-Hintergrund */
+        }
+
+        /* Dynamische Hintergründe für Filter */
+        body.filter-heute {
+            background: linear-gradient(135deg, #fff9c4 0%, #ffcc80 100%); /* Sonniger, warmer Hintergrund für "Heute" */
+        }
+        body.filter-hoch {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); /* Leichter roter Hintergrund für Hohe Priorität */
+        }
+        body.filter-mittel {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); /* Gelb-Orange für Mittlere Priorität */
+        }
+        body.filter-niedrig {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); /* Hellblau für Niedrige Priorität */
+        }
+        body.filter-offen {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); /* Leichter grüner Hintergrund für Offene Aufgaben */
+        }
+        body.filter-erledigt {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); /* Lavendel für Erledigte Aufgaben */
+        }
+        body.filter-alle {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Blau-Grau für Alle Aufgaben */
+        }
+
+        /* Dynamische Karten-Stile basierend auf dem Filter */
+        .filter-heute .card {
+            background-color: rgba(255, 249, 196, 0.7);
+            border-left: 4px solid #ffc107;
+        }
+        .filter-hoch .card {
+            background-color: rgba(255, 235, 238, 0.7);
+            border-left: 4px solid #e74a3b;
+        }
+        .filter-mittel .card {
+            background-color: rgba(255, 248, 225, 0.7);
+            border-left: 4px solid #f6c23e;
+        }
+        .filter-niedrig .card {
+            background-color: rgba(224, 247, 250, 0.7);
+            border-left: 4px solid #36b9cc;
+        }
+        .filter-offen .card {
+            background-color: rgba(232, 245, 233, 0.7);
+            border-left: 4px solid #1cc88a;
+        }
+        .filter-erledigt .card {
+            background-color: rgba(243, 229, 245, 0.7);
+            border-left: 4px solid #9c27b0;
+        }
+        .filter-alle .card {
+            background-color: rgba(248, 249, 252, 0.8);
+            border-left: 4px solid #4e73df;
+        }
+
+        /* Dynamische Header-Zeilen-Stile */
+        .filter-heute .header-row {
+            background-color: rgba(255, 236, 179, 0.5);
+        }
+        .filter-hoch .header-row {
+            background-color: rgba(255, 205, 210, 0.5);
+        }
+        .filter-mittel .header-row {
+            background-color: rgba(255, 224, 178, 0.5);
+        }
+        .filter-niedrig .header-row {
+            background-color: rgba(178, 235, 242, 0.5);
+        }
+        .filter-offen .header-row {
+            background-color: rgba(200, 230, 201, 0.5);
+        }
+        .filter-erledigt .header-row {
+            background-color: rgba(225, 190, 231, 0.5);
+        }
+        .filter-alle .header-row {
+            background-color: rgba(232, 236, 253, 0.7);
+        }
+
+        .container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        .table {
+            margin-bottom: 0;
+            transition: background-color 0.5s ease;
+        }
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Dynamische Tabellen-Stile basierend auf dem Filter */
+        .filter-heute .table tbody tr:hover {
+            background-color: rgba(255, 236, 179, 0.3);
+        }
+        .filter-hoch .table tbody tr:hover {
+            background-color: rgba(255, 205, 210, 0.3);
+        }
+        .filter-mittel .table tbody tr:hover {
+            background-color: rgba(255, 224, 178, 0.3);
+        }
+        .filter-niedrig .table tbody tr:hover {
+            background-color: rgba(178, 235, 242, 0.3);
+        }
+        .filter-offen .table tbody tr:hover {
+            background-color: rgba(200, 230, 201, 0.3);
+        }
+        .filter-erledigt .table tbody tr:hover {
+            background-color: rgba(225, 190, 231, 0.3);
+        }
+        .filter-alle .table tbody tr:hover {
+            background-color: rgba(232, 236, 253, 0.3);
+        }
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2e59d9;
+        }
+        .badge {
+            font-weight: 500;
+            padding: 0.5em 0.75em;
+            border-radius: 8px;
+        }
+        .badge-high {
+            background-color: #e74a3b !important;
+        }
+        .badge-medium {
+            background-color: #f6c23e !important;
+        }
+        .badge-low {
+            background-color: #36b9cc !important;
+        }
+        .priority-filter {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .filter-btn {
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        .filter-btn:active {
+            transform: translateY(1px);
+        }
+        .header-row {
+            background-color: #f8f9fc;
+        }
+        .completed-task {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #6c757d;
+        }
+        .overdue-task {
+            background-color: rgba(231, 74, 59, 0.1);
+        }
+        .action-buttons .btn {
+            margin-right: 0.25rem;
+            border-radius: 6px;
+        }
+        .offline-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    margin: 0;
+    border-radius: 0;
+}
+
+.offline {
+    filter: grayscale(0.5);
+}
+
+/* Install-Button Styles */
+.install-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: none;
+}
+
+.install-button.show {
+    display: block;
+}
+    </style>
+
+    <script>
+        let benachrichtigungsTon = null;
+        let benachrichtigungAktiviert = false;
+        let audioInitialisiert = false;
+
+        // Funktion zum Setzen des Hintergrunds basierend auf dem Filter
+        function setzeHintergrund() {
+            // Holt den aktuellen Parameter aus der URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const priorityFilter = urlParams.get('priority');
+            const statusFilter = urlParams.get('status');
+
+            // Entferne alle bestehenden Filter-Klassen
+            document.body.classList.remove(
+                'filter-heute',
+                'filter-hoch',
+                'filter-mittel',
+                'filter-niedrig',
+                'filter-offen',
+                'filter-erledigt',
+                'filter-alle'
+            );
+
+            // Füge die entsprechende Klasse basierend auf dem Filter hinzu
+            if (priorityFilter) {
+                document.body.classList.add(`filter-${priorityFilter}`);
+            } else if (statusFilter) {
+                document.body.classList.add(`filter-${statusFilter}`);
+            } else {
+                document.body.classList.add('filter-alle');
+            }
+        }
+
+        // Benachrichtigungen aktivieren
+        async function aktiviereBenachrichtigungen() {
+            if (!("Notification" in window)) {
+                console.error("Browser unterstützt keine Benachrichtigungen");
+                return false;
+            }
+
+            try {
+                if (Notification.permission === "granted") {
+                    benachrichtigungAktiviert = true;
+                    return true;
+                }
+
+                if (Notification.permission !== "denied") {
+                    // Zeige zuerst einen benutzerfreundlichen Dialog
+                    if (confirm("Diese App möchte Benachrichtigungen anzeigen, um Sie an fällige Aufgaben zu erinnern. Möchten Sie Benachrichtigungen erlauben?")) {
+                        const permission = await Notification.requestPermission();
+                        benachrichtigungAktiviert = permission === "granted";
+                        return benachrichtigungAktiviert;
+                    }
+                } else {
+                    // Wenn Benachrichtigungen bereits abgelehnt wurden
+                    const erlaubenDialog = confirm(
+                        "Benachrichtigungen sind derzeit deaktiviert. " +
+                        "Möchten Sie zu den Browser-Einstellungen gehen, um sie zu aktivieren?\n\n" +
+                        "Tipp: Klicken Sie auf das Schloss-Symbol neben der URL und erlauben Sie Benachrichtigungen."
+                    );
+                    if (erlaubenDialog) {
+                        alert("Bitte öffnen Sie die Browser-Einstellungen und erlauben Sie Benachrichtigungen für diese Website.");
+                    }
+                }
+
+                return false;
+            } catch (e) {
+                console.error("Fehler beim Aktivieren der Benachrichtigungen:", e);
+                return false;
+            }
+        }
+
+        // Audio-Initialisierung mit Benutzerinteraktion
+        async function initialisiereAudio() {
+            try {
+                if (!benachrichtigungsTon) {
+                    benachrichtigungsTon = new Audio("{% static 'tasks/sounds/notification.mp3' %}");
+                    benachrichtigungsTon.preload = 'auto';
+                    await benachrichtigungsTon.load();
+                    console.log("Audio erfolgreich initialisiert");
+                    audioInitialisiert = true;
+                }
+            } catch (e) {
+                console.error("Fehler bei Audio-Initialisierung:", e);
+            }
+        }
+
+        // Test für Autoplay
+        async function testAudioAutoplay() {
+            const testAudio = new Audio("{% static 'tasks/sounds/notification.mp3' %}");
+            testAudio.volume = 0.01; // Fast unhörbar
+            const playPromise = testAudio.play();
+            if (playPromise !== undefined) {
+                try {
+                    await playPromise;
+                    audioInitialisiert = true;
+                    testAudio.pause();
+                    testAudio.currentTime = 0;
+                } catch (e) {
+                    throw new Error("Autoplay nicht erlaubt");
+                }
+            }
+        }
+
+        // Verbesserte Sound-Wiedergabe
+        async function spieleBenachrichtigungston() {
+            try {
+                if (!benachrichtigungsTon) {
+                    await initialisiereAudio();
+                }
+
+                benachrichtigungsTon.currentTime = 0;
+                await benachrichtigungsTon.play();
+                console.log("Benachrichtigungston erfolgreich abgespielt");
+            } catch (e) {
+                console.error("Fehler beim Abspielen:", e);
+            }
+        }
+
+        // Browser-Benachrichtigungen anzeigen
+        function zeigeBrowserBenachrichtigung(titel, faelligkeitsDatum) {
+            if (!benachrichtigungAktiviert) return;
+
+            const options = {
+                body: `Fällig am: ${faelligkeitsDatum}`,
+                icon: "{% static 'tasks/images/icon.png' %}",
+                badge: "{% static 'tasks/images/icon.png' %}",
+                tag: `aufgabe-${Date.now()}`, // Eindeutige ID
+                vibrate: [200, 100, 200],
+                renotify: true
+            };
+
+            try {
+                const notification = new Notification(titel, options);
+
+                notification.onclick = function() {
+                    window.focus();
+                    this.close();
+                };
+
+                notification.onshow = function() {
+                    setTimeout(() => this.close(), 10000); // Schließt nach 10 Sekunden
+                };
+            } catch (e) {
+                console.error("Fehler beim Anzeigen der Benachrichtigung:", e);
+            }
+        }
+
+        // Fallback-Button anzeigen
+        function zeigeFallbackButton() {
+            const container = document.createElement('div');
+            container.id = 'benachrichtigungsFallback';
+            container.style.position = 'fixed';
+            container.style.bottom = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '9999';
+
+            const button = document.createElement('button');
+            button.className = 'btn btn-primary';
+            button.innerHTML = '<i class="fas fa-bell"></i> Ton aktivieren';
+            button.onclick = async function() {
+                await initialisiereAudio();
+                await spieleBenachrichtigungston();
+                container.remove();
+            };
+
+            container.appendChild(button);
+            document.body.appendChild(container);
+        }
+
+        // Erinnerungen prüfen
+        async function pruefeErinnerungen() {
+            if (!benachrichtigungAktiviert) return;
+
+            try {
+                const response = await fetch('{% url "check_reminders" %}');
+                if (!response.ok) throw new Error('Netzwerkantwort war nicht in Ordnung');
+
+                const data = await response.json();
+
+                if (data.tasks && data.tasks.length > 0) {
+                    console.log("Neue Erinnerungen gefunden:", data.tasks);
+
+                    // Ton abspielen
+                    if (audioInitialisiert) {
+                        await spieleBenachrichtigungston();
+                    } else {
+                        zeigeFallbackButton();
+                    }
+
+                    // Benachrichtigungen anzeigen
+                    data.tasks.forEach(aufgabe => {
+                        zeigeBrowserBenachrichtigung(aufgabe.title, aufgabe.due_date);
+                    });
+                }
+            } catch (error) {
+                console.error('Fehler beim Prüfen der Erinnerungen:', error);
+            }
+        }
+
+        // Verbesserte Test-Funktion
+        async function testBenachrichtigungen() {
+            const erlaubt = await aktiviereBenachrichtigungen();
+            if (erlaubt) {
+                zeigeBrowserBenachrichtigung("Test-Benachrichtigung", "Jetzt");
+                // Versuche sofort den Ton abzuspielen
+                if (!audioInitialisiert) {
+                    try {
+                        await testAudioAutoplay();
+                    } catch (e) {
+                        zeigeFallbackButton();
+                    }
+                }
+                await spieleBenachrichtigungston();
+            }
+        }
+
+        // Aktiviere Audio bei erster Benutzerinteraktion
+        document.addEventListener('click', async () => {
+            if (!benachrichtigungsTon) {
+                await initialisiereAudio();
+            }
+        }, { once: true });
+
+        // UI-Elemente basierend auf dem Filter anpassen
+        function passeUIElementeAn() {
+            // Aktuellen Filter aus der URL oder localStorage holen
+            const urlParams = new URLSearchParams(window.location.search);
+            const priorityFilter = urlParams.get('priority');
+            const statusFilter = urlParams.get('status');
+
+            let aktiverFilter = 'alle';
+            if (priorityFilter) {
+                aktiverFilter = priorityFilter;
+            } else if (statusFilter) {
+                aktiverFilter = statusFilter;
+            }
+
+            // Anpassung der UI-Elemente basierend auf dem Filter
+            const filterMapping = {
+                'heute': {
+                    buttonClass: 'btn-warning',
+                    iconClass: 'fa-calendar-day',
+                    buttonText: 'Neue Aufgabe für Heute'
+                },
+                'hoch': {
+                    buttonClass: 'btn-danger',
+                    iconClass: 'fa-exclamation-circle',
+                    buttonText: 'Neue wichtige Aufgabe'
+                },
+                'mittel': {
+                    buttonClass: 'btn-warning',
+                    iconClass: 'fa-arrow-right',
+                    buttonText: 'Neue Aufgabe (mittel)'
+                },
+                'niedrig': {
+                    buttonClass: 'btn-info',
+                    iconClass: 'fa-arrow-down',
+                    buttonText: 'Neue einfache Aufgabe'
+                },
+                'offen': {
+                    buttonClass: 'btn-success',
+                    iconClass: 'fa-clock',
+                    buttonText: 'Neue offene Aufgabe'
+                },
+                'erledigt': {
+                    buttonClass: 'btn-secondary',
+                    iconClass: 'fa-check',
+                    buttonText: 'Neue Aufgabe'
+                },
+                'alle': {
+                    buttonClass: 'btn-primary',
+                    iconClass: 'fa-plus',
+                    buttonText: 'Neue Aufgabe'
+                }
+            };
+
+            // Neuer-Aufgabe-Button anpassen
+            const neueAufgabeBtn = document.querySelector('a[href*="task_list"]');
+            if (neueAufgabeBtn && filterMapping[aktiverFilter]) {
+                const config = filterMapping[aktiverFilter];
+
+                // Klassen entfernen und neue hinzufügen
+                neueAufgabeBtn.className = `btn ${config.buttonClass} mb-3`;
+
+                // Icon und Text anpassen
+                neueAufgabeBtn.innerHTML = `<i class="fas ${config.iconClass} me-1"></i>${config.buttonText}`;
+            }
+        }
+
+        // Setze den Seiteneffekt, regelmäßig Erinnerungen zu prüfen
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Hintergrund basierend auf dem Filter setzen
+            setzeHintergrund();
+
+            // UI-Elemente basierend auf dem Filter anpassen
+            passeUIElementeAn();
+
+            // Aktiviere Benachrichtigungen beim Laden
+            await aktiviereBenachrichtigungen();
+
+            // Prüfe sofort Erinnerungen
+            await pruefeErinnerungen();
+
+            // Prüfe dann alle 60 Sekunden
+            setInterval(pruefeErinnerungen, 60000);
+
+            // Event-Listener für Filter-Buttons hinzufügen
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const url = new URL(this.href);
+
+                    // Bestimme, welche Filterart (priority oder status) und -wert aktiv sein wird
+                    let filterType = '';
+                    let filterValue = '';
+
+                    if (url.searchParams.has('priority')) {
+                        filterType = 'priority';
+                        filterValue = url.searchParams.get('priority');
+                    } else if (url.searchParams.has('status')) {
+                        filterType = 'status';
+                        filterValue = url.searchParams.get('status');
+                    } else {
+                        filterValue = 'alle';
+                    }
+
+                    // Speichere den Filter in localStorage
+                    localStorage.setItem('letzterFilter', filterValue);
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0"><i class="fas fa-tasks me-2"></i>Alle Aufgaben</h2>
+                    <div>
+                        {% if user.is_authenticated %}
+                            <span class="me-3">Angemeldet als <strong>{{ user.username }}</strong></span>
+                            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Abmelden
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">
+                                <i class="fas fa-sign-in-alt me-1"></i>Anmelden
+                            </a>
+                            <a href="{% url 'register' %}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-user-plus me-1"></i>Registrieren
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <a href="{% url 'task_list' %}" class="btn btn-primary mb-3">
+                        <i class="fas fa-plus me-1"></i>Neue Aufgabe
+                    </a>
+
+                    <div class="priority-filter">
+                        <h5>Filter:</h5>
+                        <div class="d-flex flex-wrap">
+                            <a href="?priority=heute" class="btn {% if request.GET.priority == 'heute' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
+                                <i class="fas fa-calendar-day me-1"></i>Heute
+                            </a>
+                            <a href="?priority=hoch" class="btn {% if request.GET.priority == 'hoch' %}btn-danger{% else %}btn-outline-danger{% endif %} filter-btn">
+                                <i class="fas fa-arrow-up me-1"></i>Hohe Priorität
+                            </a>
+                            <a href="?priority=mittel" class="btn {% if request.GET.priority == 'mittel' %}btn-warning{% else %}btn-outline-warning{% endif %} filter-btn">
+                                <i class="fas fa-arrow-right me-1"></i>Mittlere Priorität
+                            </a>
+                            <a href="?priority=niedrig" class="btn {% if request.GET.priority == 'niedrig' %}btn-info{% else %}btn-outline-info{% endif %} filter-btn">
+                                <i class="fas fa-arrow-down me-1"></i>Niedrige Priorität
+                            </a>
+                            <a href="?status=offen" class="btn {% if request.GET.status == 'offen' %}btn-success{% else %}btn-outline-success{% endif %} filter-btn">
+                                <i class="fas fa-clock me-1"></i>Offene Aufgaben
+                            </a>
+                            <a href="?status=erledigt" class="btn {% if request.GET.status == 'erledigt' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
+                                <i class="fas fa-check me-1"></i>Erledigte Aufgaben
+                            </a>
+                            <a href="{% url 'alle_aufgaben' %}" class="btn {% if not request.GET.priority and not request.GET.status %}btn-primary{% else %}btn-outline-primary{% endif %} filter-btn">
+                                <i class="fas fa-list me-1"></i>Alle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="header-row">
+                            <tr>
+                                <th><i class="fas fa-tasks me-1"></i>Aufgabe</th>
+                                <th><i class="fas fa-exclamation-circle me-1"></i>Priorität</th>
+                                <th><i class="fas fa-tag me-1"></i>Kategorie</th>
+                                <th><i class="fas fa-calendar-alt me-1"></i>Fällig am</th>
+                                <th><i class="fas fa-bell me-1"></i>Erinnerung</th>
+                                <th><i class="fas fa-info-circle me-1"></i>Status</th>
+                                <th><i class="fas fa-cog me-1"></i>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr class="{% if task.is_completed %}completed-task{% elif task.is_overdue %}overdue-task{% endif %}">
+                                <td>
+                                    {% if task.is_completed %}
+                                        <s>{{ task.title }}</s>
+                                    {% else %}
+                                        {{ task.title }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {% if task.priority == 'high' %}badge-high
+                                        {% elif task.priority == 'medium' %}badge-medium text-dark
+                                        {% else %}badge-low{% endif %}">
+                                        {{ task.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ task.get_category_display }}</span>
+                                </td>
+                                <td>
+                                    {% if task.due_date %}
+                                        <i class="far fa-calendar me-1"></i>{{ task.due_date|date:"d.m.Y" }}
+                                        <br>
+                                        <small><i class="far fa-clock me-1"></i>{{ task.due_date|date:"H:i" }}</small>
+                                        {% if task.is_overdue and not task.is_completed %}
+                                            <span class="badge bg-danger ms-1">Überfällig</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">–</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if task.reminder_time %}
+                                        <i class="far fa-bell me-1"></i>{{ task.reminder_time|date:"d.m.Y" }}
+                                        <br>
+                                        <small><i class="far fa-clock me-1"></i>{{ task.reminder_time|date:"H:i" }}</small>
+                                        {% if task.reminder_sent %}
+                                            <span class="badge bg-success ms-1">Versendet</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">–</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if task.is_completed %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Erledigt
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-hourglass-half me-1"></i>Offen
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        {% if not task.is_completed %}
+                                            <a href="{% url 'complete_task' task.id %}" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check me-1"></i>Erledigen
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'reactivate_task' task.pk %}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-redo me-1"></i>Reaktivieren
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'edit_task' task.id %}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-edit me-1"></i>Bearbeiten
+                                        </a>
+                                        <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash me-1"></i>Löschen
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center p-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-tasks fa-3x mb-3"></i>
+                                        <p class="mb-0">Keine Aufgaben gefunden</p>
+                                        <p class="small">Erstellen Sie eine neue Aufgabe, um loszulegen</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>       <!-- Benachrichtigungen aktivieren -->
+
+    </div>
+    <button id="installButton" class="btn btn-primary install-button">
+    <i class="fas fa-download me-2"></i>App installieren
+</button>
+
+<script>
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installButton = document.getElementById('installButton');
+    installButton.classList.add('show');
+
+    installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('App installiert');
+            }
+            deferredPrompt = null;
+            installButton.classList.remove('show');
+        }
+    });
+});
+</script>
+<!-- Service Worker Registration -->
+    {% include '_service_worker_registration.html' %}
+</body>
+</html>

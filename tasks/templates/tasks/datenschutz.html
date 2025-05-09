@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="glass-card p-4">
+        <h2 class="mb-4"><i class="fas fa-shield-alt me-2"></i>Datenschutzerklärung</h2>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Stand: {{ current_date|date:"d.m.Y" }} | Gültig für SmartTodo Web & Mobile App
+        </div>
+
+        <h4 class="mt-4">1. Verantwortlicher</h4>
+        <p>
+            SmartTodo GmbH<br>
+            Musterstraße 123<br>
+            10115 Freiburg<br>
+            <br>
+            E-Mail: datenschutz@smarttodo.de<br>
+            Telefon: +49 30 12345678
+        </p>
+
+        <h4 class="mt-4">2. Grundlagen der Datenverarbeitung</h4>
+        <p>
+            Wir verarbeiten personenbezogene Daten gemäß:<br>
+            - Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)<br>
+            - Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung)<br>
+            - Art. 6 Abs. 1 lit. f DSGVO (berechtigte Interessen)
+        </p>
+
+        <h4 class="mt-4">3. Erhobene Daten</h4>
+        <p>
+            Bei Nutzung unserer App erfassen wir:<br><br>
+            <strong>a) Nutzungsdaten:</strong><br>
+            - IP-Adresse (anonymisiert)<br>
+            - Browser-Typ/Version<br>
+            - Betriebssystem<br>
+            - Geräteinformationen<br><br>
+            <strong>b) Personenbezogene Daten:</strong><br>
+            - Name, E-Mail (bei Registrierung)<br>
+            - Aufgabeninhalte (selbst erstellte Daten)<br>
+            - Termine & Erinnerungen
+        </p>
+
+        <h4 class="mt-4">4. Cookies & Tracking</h4>
+        <p>
+            Wir verwenden folgende Cookie-Typen:<br><br>
+            <strong>Notwendige Cookies:</strong> Für Basis-Funktionen der App<br>
+            <strong>Analytics-Cookies:</strong> Google Analytics (anonymisiert)<br>
+            <strong>Marketing-Cookies:</strong> Nur nach expliziter Einwilligung<br><br>
+            Sie können Ihre <a href="{% url 'cookie_settings' %}">Cookie-Einstellungen</a> jederzeit ändern.
+        </p>
+
+        <h4 class="mt-4">5. Datenweitergabe</h4>
+        <p>
+            Daten werden nur weitergegeben an:<br>
+            - Hosting-Provider (in Deutschland/EU)<br>
+            - Payment-Dienstleister (bei Premium-Features)<br>
+            - Keine Weitergabe an Drittländer außerhalb der EU
+        </p>
+
+        <h4 class="mt-4">6. Ihre Rechte</h4>
+        <p>
+            Sie haben gemäß DSGVO das Recht auf:<br>
+            - Auskunft (Art. 15)<br>
+            - Berichtigung (Art. 16)<br>
+            - Löschung (Art. 17)<br>
+            - Einschränkung (Art. 18)<br>
+            - Datenübertragbarkeit (Art. 20)<br>
+            - Widerspruch (Art. 21)<br><br>
+            Kontaktieren Sie uns hierfür unter: datenschutz@smarttodo.de
+        </p>
+
+        <h4 class="mt-4">7. Datensicherheit</h4>
+        <p>
+            Wir verwenden:<br>
+            - SSL-Verschlüsselung<br>
+            - Regelmäßige Backups<br>
+            - Pseudonymisierung wo möglich<br>
+            - Zugriffsbeschränkungen
+        </p>
+
+        <div class="mt-5 border-top pt-3">
+            <a href="{% url 'impressum' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-landmark me-1"></i>Impressum
+            </a>
+            <a href="{% url 'cookie_settings' %}" class="btn btn-outline-primary">
+                <i class="fas fa-cookie-bite me-1"></i>Cookie-Einstellungen
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
