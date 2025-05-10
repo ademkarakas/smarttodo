@@ -86,10 +86,12 @@ class RegisterForm(UserCreationForm):
 
         if commit:
             user.save()
-            profile = Profile.objects.get(user=user)
+            profile, created = Profile.objects.get_or_create(user=user)
             profile.telefon = self.cleaned_data['telefon']
             profile.save()
+
         return user
+
 
 class ContactForm(forms.ModelForm):
     class Meta:
