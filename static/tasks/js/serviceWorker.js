@@ -1,7 +1,7 @@
 const CACHE_NAME = 'smarttodo-v1';
 const urlsToCache = [
   '/',
-  '/static/tasks/styles.css',
+  '/static/tasks/css/styles.css',
   '/static/tasks/images/icon.png',
   '/static/tasks/sounds/notification.mp3',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',

@@ -3,7 +3,7 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('{% static "serviceWorker.js" %}')
+      navigator.serviceWorker.register('{% static "tasks/js/serviceWorker.js" %}')
         .then(registration => {
           console.log('ServiceWorker registriert:', registration.scope);
         })

@@ -1,8 +1,30 @@
 {% load static %}
 
+<!-- Service Worker und Manifest-Datei korrekt einbinden -->
 <link rel="manifest" href="{% static 'tasks/manifest.json' %}">
-    <meta name="theme-color" content="#4e73df">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="SmartToDo">
-    <link rel="apple-touch-icon" href="{% static 'tasks/icons/icon-152x152.png' %}">
+<meta name="theme-color" content="#4e73df">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="SmartToDo">
+
+<!-- Apple Touch Icon für iOS-Geräte -->
+<link rel="apple-touch-icon" href="{% static 'tasks/icons/apple-touch-icon.png' %}">
+<!-- Favicon -->
+<link rel="icon" href="{% static 'tasks/icons/favicon.ico' %}">
+<!-- Service Worker registrieren -->
+<script>
+  // Überprüfen, ob der Browser Service Worker unterstützt
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register("{% static 'tasks/js/serviceWorker.js' %}")
+        .then(function(registration) {
+          // Erfolgreiche Registrierung
+          console.log('ServiceWorker erfolgreich registriert mit Scope: ', registration.scope);
+        })
+        .catch(function(error) {
+          // Fehler bei der Registrierung
+          console.log('ServiceWorker Registrierung fehlgeschlagen: ', error);
+        });
+    });
+  }
+</script>
