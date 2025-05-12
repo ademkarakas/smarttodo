@@ -31,9 +31,20 @@
   });
 
   function showOfflineMessage() {
-    const message = document.createElement('div');
-    message.className = 'alert alert-warning offline-alert';
-    message.innerHTML = '<i class="fas fa-wifi"></i> Sie sind offline. Die App funktioniert weiterhin, aber Änderungen werden erst synchronisiert, wenn Sie wieder online sind.';
-    document.body.insertBefore(message, document.body.firstChild);
+    if (!document.querySelector('.offline-alert')) {
+      const message = document.createElement('div');
+      message.className = 'alert alert-warning offline-alert';
+      message.innerHTML = '<i class="fas fa-wifi"></i> Sie sind offline. Die App funktioniert weiterhin, aber Änderungen werden erst synchronisiert, wenn Sie wieder online sind.';
+      document.body.insertBefore(message, document.body.firstChild);
   }
+}
+if ('serviceWorker' in navigator && 'SyncManager' in window) {
+  navigator.serviceWorker.ready.then(registration => {
+    registration.sync.register('sync-tasks').catch(err => {
+      console.error('Hintergrund-Synchronisierung fehlgeschlagen:', err);
+    });
+  });
+}
+
+
 </script>

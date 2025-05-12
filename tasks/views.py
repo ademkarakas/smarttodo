@@ -215,7 +215,7 @@ def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
     task.delete()
     messages.success(request, 'Aufgabe erfolgreich gelöscht!')
-    return redirect('task_list')
+    return redirect('alle_aufgaben')
 
 
 from .forms import RegisterForm  # Statt UserCreationForm
