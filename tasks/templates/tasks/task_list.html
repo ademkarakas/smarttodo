@@ -241,20 +241,19 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="id_due_date" class="form-label">Datum*</label>
-                    <input type="date" name="due_date" id="id_due_date" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="id_due_time" class="form-label">Uhrzeit*</label>
-                    <input type="time" name="due_time" id="id_due_time" class="form-control" required value="12:00">
-                </div>
+    <label for="id_due_datetime" class="form-label">Datum & Uhrzeit*</label>
+    <input type="datetime-local" name="due_datetime" id="id_due_datetime" class="form-control" required
+           value="2025-05-15T12:00">
+</div>
+    <!-- Erinnerung -->
+<div class="col-md-4">
+    <label for="id_reminder_time" class="form-label">Erinnerung*</label>
+    <input type="datetime-local" name="reminder_time" id="id_reminder_time" class="form-control" value="2025-05-15T12:00">
+</div>
+
             </div>
 <div class="row align-items-center">
-    <!-- Zeitauswahl (50% Breite) -->
-    <div class="col-md-4 col-6">
-        <label for="id_due_time" class="form-label">Erinnerung*</label>
-        <input type="time" name="due_time" id="id_due_time" class="form-control" required value="12:00">
-    </div>
+
 
     <!-- Switch-Button (50% Breite) -->
     <div class="col-md-4 col-6">

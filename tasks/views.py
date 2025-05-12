@@ -1,3 +1,5 @@
+import traceback
+
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, logger
 from django.shortcuts import render, redirect, get_object_or_404
@@ -83,21 +85,17 @@ def task_list(request):
             task.user = request.user
 
             # Kombiniere Datum und Uhrzeit
-            due_date_str = request.POST.get('due_date')
-            due_time_str = request.POST.get('due_time')
-
-            if due_date_str and due_time_str:
-                due_datetime_str = f"{due_date_str} {due_time_str}"
-                task.due_date = timezone.make_aware(
-                    datetime.strptime(due_datetime_str, '%Y-%m-%d %H:%M')
-                )
-
-            # Berechne Erinnerungszeit
-            reminder_minutes = request.POST.get('reminder')
-            if reminder_minutes and task.due_date:
+            due_datetime_str = request.POST.get('due_datetime')
+            if due_datetime_str:
                 try:
-                    minutes = int(reminder_minutes)
-                    task.reminder_time = task.due_date - timezone.timedelta(minutes=minutes)
+                    task.due_date = timezone.make_aware(datetime.strptime(due_datetime_str, '%Y-%m-%dT%H:%M'))
+                except ValueError:
+                    pass
+
+            reminder_time_str = request.POST.get('reminder_time')
+            if reminder_time_str:
+                try:
+                    task.reminder_time = timezone.make_aware(datetime.strptime(reminder_time_str, '%Y-%m-%dT%H:%M'))
                 except ValueError:
                     pass
 
@@ -105,14 +103,13 @@ def task_list(request):
             messages.success(request, 'Aufgabe erfolgreich erstellt!')
             return redirect('task_list')
     else:
-        form = TaskForm()
+            form = TaskForm()
 
     tasks = Task.objects.filter(user=request.user).order_by('due_date')
-
     return render(request, 'tasks/task_list.html', {
-        'tasks': tasks,
-        'form': form
-    })
+            'tasks': tasks,
+            'form': form
+        })
 
 
 @login_required
@@ -255,9 +252,12 @@ def add_suggestion(request):
 @login_required
 def check_reminders(request):
     try:
-        jetzt = timezone.now()
+        # Aktuelle Zeit in lokale Zeitzone umwandeln
+        jetzt = timezone.localtime()
+
         tasks = Task.objects.filter(
             user=request.user,
+            # Erinnerungszeit mit lokaler Zeit vergleichen
             reminder_time__lte=jetzt,
             reminder_sent=False,
             is_completed=False
@@ -265,18 +265,38 @@ def check_reminders(request):
 
         tasks_data = []
         for task in tasks:
+            # Erinnerungszeit in lokale Zeitzone umwandeln
+            local_reminder_time = timezone.localtime(task.reminder_time)
+
+            # Fälligkeitsdatum in lokale Zeitzone umwandeln
+            local_due_date = timezone.localtime(task.due_date) if task.due_date else None
+
             tasks_data.append({
                 'id': task.id,
                 'title': task.title,
-                'due_date': task.due_date.strftime("%d.%m.%Y %H:%M") if task.due_date else None
+                # Lokalisierte Zeitformatierung
+                'due_date': local_due_date.strftime("%d.%m.%Y %H:%M") if local_due_date else None,
+                # Zusätzliche Debugging-Informationen
+                'original_reminder_time': task.reminder_time,
+                'localized_reminder_time': local_reminder_time
             })
 
-            # Markiere als gesendet
+            # Als gesendet markieren
             task.reminder_sent = True
             task.save()
 
-        return JsonResponse({'tasks': tasks_data})
+        # Zusätzliche Logging-Informationen
+        logger.info(f"Aktuelle lokale Zeit: {jetzt}")
+        logger.info(f"Gefundene Tasks: {len(tasks_data)}")
+
+        return JsonResponse({
+            'tasks': tasks_data,
+            # Aktuelle lokale Zeit in der Antwort hinzufügen
+            'current_local_time': jetzt.strftime("%d.%m.%Y %H:%M %Z")
+        })
     except Exception as e:
+        # Detaillierte Fehler-Logging
         logger.error(f"Fehler in check_reminders: {str(e)}")
-        logger.info(f"Gefundene Tasks: {len(tasks)}")
+        logger.error(f"Vollständige Fehlermeldung: {traceback.format_exc()}")
+
         return JsonResponse({'error': 'Ein Fehler ist aufgetreten'}, status=500)

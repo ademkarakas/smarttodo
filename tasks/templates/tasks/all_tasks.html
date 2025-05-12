@@ -650,30 +650,33 @@
                                 <td>
                                     <span class="badge bg-secondary">{{ task.get_category_display }}</span>
                                 </td>
-                                <td>
-                                    {% if task.due_date %}
-                                        <i class="far fa-calendar me-1"></i>{{ task.due_date|date:"d.m.Y" }}
-                                        <br>
-                                        <small><i class="far fa-clock me-1"></i>{{ task.due_date|date:"H:i" }}</small>
-                                        {% if task.is_overdue and not task.is_completed %}
-                                            <span class="badge bg-danger ms-1">Überfällig</span>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="text-muted">–</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if task.reminder_time %}
-                                        <i class="far fa-bell me-1"></i>{{ task.reminder_time|date:"d.m.Y" }}
-                                        <br>
-                                        <small><i class="far fa-clock me-1"></i>{{ task.reminder_time|date:"H:i" }}</small>
-                                        {% if task.reminder_sent %}
-                                            <span class="badge bg-success ms-1">Versendet</span>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="text-muted">–</span>
-                                    {% endif %}
-                                </td>
+                                <!-- Fällig am -->
+<td>
+    {% if task.due_date %}
+        <i class="far fa-calendar me-1"></i>{{ task.due_date|date:"d.m.Y" }}
+    <br><small><i class="far fa-clock me-1"></i>{{ task.due_date|date:"H:i" }}</small>
+        {% if task.is_overdue and not task.is_completed %}
+            <span class="badge bg-danger ms-1">Überfällig</span>
+        {% endif %}
+    {% else %}
+        <span class="text-muted">–</span>
+    {% endif %}
+</td>
+
+<!-- Erinnerung -->
+<td>
+    {% if task.reminder_time %}
+        <i class="far fa-bell me-1"></i>{{ task.reminder_time|date:"d.m.Y" }}
+        <br>
+        <small><i class="far fa-clock me-1"></i>{{ task.reminder_time|date:"H:i" }}</small>
+        {% if task.reminder_sent %}
+            <span class="badge bg-success ms-1">Versendet</span>
+        {% endif %}
+    {% else %}
+        <span class="text-muted">–</span>
+    {% endif %}
+</td>
+
                                 <td>
                                     {% if task.is_completed %}
                                         <span class="badge bg-success">
