@@ -1,6 +1,7 @@
 import traceback
 
-from django.contrib import messages
+from django.contrib.auth import login as auth_login
+
 from django.contrib.auth.forms import UserCreationForm, logger
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -15,6 +16,7 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
+from .forms import RegisterForm  # Statt UserCreationForm
 
 def home_view(request):
     if request.user.is_authenticated:
@@ -218,16 +220,16 @@ def delete_task(request, pk):
     return redirect('alle_aufgaben')
 
 
-from .forms import RegisterForm  # Statt UserCreationForm
+
 
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Konto für {username} wurde erstellt! Sie können sich jetzt einloggen.')
-            return redirect('login')
+            user = form.save()  # Benutzer wurde erstellt
+            auth_login(request, user)  # Anmeldung (Login) durchgeführt
+            messages.success(request, "Sie haben sich erfolgreich registriert und eingeloggt!")
+            return redirect('alle_aufgaben')  # Zur Startseite weitergeleitet
     else:
         form = RegisterForm()
     return render(request, 'tasks/register.html', {'form': form})
