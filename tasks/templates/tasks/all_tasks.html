@@ -13,215 +13,299 @@
     {% include '_pwa_meta_tags.html' %}
 
     <style>
-        /* Grundstil für die Seite */
-        body {
-            transition: background 0.5s ease;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Standard-Hintergrund */
-        }
+    /* Grundstil für die Seite */
+    body {
+        transition: background 0.5s ease;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Standard-Hintergrund */
+    }
 
-        /* Dynamische Hintergründe für Filter */
-        body.filter-heute {
-            background: linear-gradient(135deg, #fff9c4 0%, #ffcc80 100%); /* Sonniger, warmer Hintergrund für "Heute" */
-        }
-        body.filter-hoch {
-            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); /* Leichter roter Hintergrund für Hohe Priorität */
-        }
-        body.filter-mittel {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); /* Gelb-Orange für Mittlere Priorität */
-        }
-        body.filter-niedrig {
-            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); /* Hellblau für Niedrige Priorität */
-        }
-        body.filter-offen {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); /* Leichter grüner Hintergrund für Offene Aufgaben */
-        }
-        body.filter-erledigt {
-            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); /* Lavendel für Erledigte Aufgaben */
-        }
-        body.filter-alle {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Blau-Grau für Alle Aufgaben */
-        }
+    /* Dynamische Hintergründe für Filter */
+    body.filter-heute {
+        background: linear-gradient(135deg, #fff9c4 0%, #ffcc80 100%); /* Sonniger, warmer Hintergrund für "Heute" */
+    }
+    body.filter-hoch {
+        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); /* Leichter roter Hintergrund für Hohe Priorität */
+    }
+    body.filter-mittel {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); /* Gelb-Orange für Mittlere Priorität */
+    }
+    body.filter-niedrig {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); /* Hellblau für Niedrige Priorität */
+    }
+    body.filter-offen {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); /* Leichter grüner Hintergrund für Offene Aufgaben */
+    }
+    body.filter-erledigt {
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); /* Lavendel für Erledigte Aufgaben */
+    }
+    body.filter-alle {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Blau-Grau für Alle Aufgaben */
+    }
 
-        /* Dynamische Karten-Stile basierend auf dem Filter */
-        .filter-heute .card {
-            background-color: rgba(255, 249, 196, 0.7);
-            border-left: 4px solid #ffc107;
-        }
-        .filter-hoch .card {
-            background-color: rgba(255, 235, 238, 0.7);
-            border-left: 4px solid #e74a3b;
-        }
-        .filter-mittel .card {
-            background-color: rgba(255, 248, 225, 0.7);
-            border-left: 4px solid #f6c23e;
-        }
-        .filter-niedrig .card {
-            background-color: rgba(224, 247, 250, 0.7);
-            border-left: 4px solid #36b9cc;
-        }
-        .filter-offen .card {
-            background-color: rgba(232, 245, 233, 0.7);
-            border-left: 4px solid #1cc88a;
-        }
-        .filter-erledigt .card {
-            background-color: rgba(243, 229, 245, 0.7);
-            border-left: 4px solid #9c27b0;
-        }
-        .filter-alle .card {
-            background-color: rgba(248, 249, 252, 0.8);
-            border-left: 4px solid #4e73df;
-        }
+    /* Dynamische Karten-Stile basierend auf dem Filter */
+    .filter-heute .task-card {
+        background-color: rgba(255, 249, 196, 0.7);
+        border-left: 4px solid #ffc107 !important;
+    }
+    .filter-hoch .task-card {
+        background-color: rgba(255, 235, 238, 0.7);
+        border-left: 4px solid #e74a3b !important;
+    }
+    .filter-mittel .task-card {
+        background-color: rgba(255, 248, 225, 0.7);
+        border-left: 4px solid #f6c23e !important;
+    }
+    .filter-niedrig .task-card {
+        background-color: rgba(224, 247, 250, 0.7);
+        border-left: 4px solid #36b9cc !important;
+    }
+    .filter-offen .task-card {
+        background-color: rgba(232, 245, 233, 0.7);
+        border-left: 4px solid #1cc88a !important;
+    }
+    .filter-erledigt .task-card {
+        background-color: rgba(243, 229, 245, 0.7);
+        border-left: 4px solid #9c27b0 !important;
+    }
+    .filter-alle .task-card {
+        background-color: rgba(248, 249, 252, 0.8);
+        border-left: 4px solid #4e73df !important;
+    }
 
-        /* Dynamische Header-Zeilen-Stile */
-        .filter-heute .header-row {
-            background-color: rgba(255, 236, 179, 0.5);
-        }
-        .filter-hoch .header-row {
-            background-color: rgba(255, 205, 210, 0.5);
-        }
-        .filter-mittel .header-row {
-            background-color: rgba(255, 224, 178, 0.5);
-        }
-        .filter-niedrig .header-row {
-            background-color: rgba(178, 235, 242, 0.5);
-        }
-        .filter-offen .header-row {
-            background-color: rgba(200, 230, 201, 0.5);
-        }
-        .filter-erledigt .header-row {
-            background-color: rgba(225, 190, 231, 0.5);
-        }
-        .filter-alle .header-row {
-            background-color: rgba(232, 236, 253, 0.7);
-        }
+    /* Dynamische Header-Zeilen-Stile */
+    .filter-heute .header-row {
+        background-color: rgba(255, 236, 179, 0.5);
+    }
+    .filter-hoch .header-row {
+        background-color: rgba(255, 205, 210, 0.5);
+    }
+    .filter-mittel .header-row {
+        background-color: rgba(255, 224, 178, 0.5);
+    }
+    .filter-niedrig .header-row {
+        background-color: rgba(178, 235, 242, 0.5);
+    }
+    .filter-offen .header-row {
+        background-color: rgba(200, 230, 201, 0.5);
+    }
+    .filter-erledigt .header-row {
+        background-color: rgba(225, 190, 231, 0.5);
+    }
+    .filter-alle .header-row {
+        background-color: rgba(232, 236, 253, 0.7);
+    }
 
+    .container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Basis-Stil für Karten */
+    .card, .task-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .card:hover, .task-card:hover {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+    }
+
+    /* Stil für die Task-Karten in der mobilen Ansicht */
+    .task-card {
+        border-left: 4px solid #ccc;
+        margin-bottom: 15px;
+    }
+
+    .task-card.completed-task {
+        border-left-color: #28a745;
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+
+    .task-card.overdue-task {
+        border-left-color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+
+    /* Stil für Checkboxen und Task-Titel */
+    .task-checkbox {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .task-title {
+        cursor: pointer;
+    }
+
+    .task-icon-pending {
+        color: #6c757d;
+    }
+
+    .task-icon-completed {
+        color: #28a745;
+    }
+
+    /* Tabellenstile */
+    .table {
+        margin-bottom: 0;
+        transition: background-color 0.5s ease;
+    }
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+        transition: background-color 0.5s ease;
+    }
+
+    /* Dynamische Tabellen-Stile basierend auf dem Filter */
+    .filter-heute .table tbody tr:hover {
+        background-color: rgba(255, 236, 179, 0.3);
+    }
+    .filter-hoch .table tbody tr:hover {
+        background-color: rgba(255, 205, 210, 0.3);
+    }
+    .filter-mittel .table tbody tr:hover {
+        background-color: rgba(255, 224, 178, 0.3);
+    }
+    .filter-niedrig .table tbody tr:hover {
+        background-color: rgba(178, 235, 242, 0.3);
+    }
+    .filter-offen .table tbody tr:hover {
+        background-color: rgba(200, 230, 201, 0.3);
+    }
+    .filter-erledigt .table tbody tr:hover {
+        background-color: rgba(225, 190, 231, 0.3);
+    }
+    .filter-alle .table tbody tr:hover {
+        background-color: rgba(232, 236, 253, 0.3);
+    }
+
+    /* Button-Stile */
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+    }
+
+    /* Badge-Stile */
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+        border-radius: 8px;
+    }
+    .badge-high {
+        background-color: #e74a3b !important;
+    }
+    .badge-medium {
+        background-color: #f6c23e !important;
+    }
+    .badge-low {
+        background-color: #36b9cc !important;
+    }
+
+    /* Filter-Stil */
+    .priority-filter {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    .filter-btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: transform 0.2s;
+    }
+    .filter-btn:hover {
+        transform: translateY(-2px);
+    }
+    .filter-btn:active {
+        transform: translateY(1px);
+    }
+
+    /* Task-Stile */
+    .header-row {
+        background-color: #f8f9fc;
+    }
+    .completed-task {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #6c757d;
+    }
+    .overdue-task {
+        background-color: rgba(231, 74, 59, 0.1);
+    }
+
+    /* Aktionsbuttons */
+    .action-buttons .btn {
+        margin-right: 0.25rem;
+        border-radius: 6px;
+    }
+
+    /* Task-Link-Stil */
+    .task-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .task-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Offline-Benachrichtigung */
+    .offline-alert {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .offline {
+        filter: grayscale(0.5);
+    }
+
+    /* Stil für Install-Button */
+    .install-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none;
+        z-index: 1000;
+        border-radius: 50px;
+        padding: 10px 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .install-button.show {
+        display: block;
+    }
+
+    /* Bessere mobile Ansicht für Filterknöpfe */
+    .priority-filter .filter-btn {
+        margin-bottom: 5px;
+    }
+
+    /* Zusätzliche Anpassungen für Bildschirmgrößen */
+    @media (max-width: 768px) {
         .container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-            transform: translateY(-3px);
-        }
-        .table {
-            margin-bottom: 0;
-            transition: background-color 0.5s ease;
-        }
-        .table th {
-            border-top: none;
-            font-weight: 600;
-            color: #495057;
-            transition: background-color 0.5s ease;
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
-        /* Dynamische Tabellen-Stile basierend auf dem Filter */
-        .filter-heute .table tbody tr:hover {
-            background-color: rgba(255, 236, 179, 0.3);
+        .card-body {
+            padding: 15px;
         }
-        .filter-hoch .table tbody tr:hover {
-            background-color: rgba(255, 205, 210, 0.3);
-        }
-        .filter-mittel .table tbody tr:hover {
-            background-color: rgba(255, 224, 178, 0.3);
-        }
-        .filter-niedrig .table tbody tr:hover {
-            background-color: rgba(178, 235, 242, 0.3);
-        }
-        .filter-offen .table tbody tr:hover {
-            background-color: rgba(200, 230, 201, 0.3);
-        }
-        .filter-erledigt .table tbody tr:hover {
-            background-color: rgba(225, 190, 231, 0.3);
-        }
-        .filter-alle .table tbody tr:hover {
-            background-color: rgba(232, 236, 253, 0.3);
-        }
-        .btn-primary {
-            background-color: #4e73df;
-            border-color: #4e73df;
-        }
-        .btn-primary:hover {
-            background-color: #2e59d9;
-            border-color: #2e59d9;
-        }
-        .badge {
-            font-weight: 500;
-            padding: 0.5em 0.75em;
-            border-radius: 8px;
-        }
-        .badge-high {
-            background-color: #e74a3b !important;
-        }
-        .badge-medium {
-            background-color: #f6c23e !important;
-        }
-        .badge-low {
-            background-color: #36b9cc !important;
-        }
-        .priority-filter {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        .filter-btn {
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            transition: transform 0.2s;
-        }
-        .filter-btn:hover {
-            transform: translateY(-2px);
-        }
-        .filter-btn:active {
-            transform: translateY(1px);
-        }
-        .header-row {
-            background-color: #f8f9fc;
-        }
-        .completed-task {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: #6c757d;
-        }
-        .overdue-task {
-            background-color: rgba(231, 74, 59, 0.1);
-        }
+
         .action-buttons .btn {
-            margin-right: 0.25rem;
-            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.775rem;
         }
-        .offline-alert {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    margin: 0;
-    border-radius: 0;
-}
-
-.offline {
-    filter: grayscale(0.5);
-}
-
-/* Install-Button Styles */
-.install-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: none;
-}
-
-.install-button.show {
-    display: block;
-}
-    </style>
+    }
+</style>
 
     <script>
         let benachrichtigungsTon = null;
@@ -556,16 +640,15 @@
         });
     </script>
 </head>
-
 <body>
     <div class="container">
         <div class="card mb-4">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0"><i class="fas fa-tasks me-2"></i>Alle Aufgaben</h2>
-                    <div>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                    <h2 class="mb-3 mb-md-0"><i class="fas fa-tasks me-2"></i>Meine Aufgaben</h2>
+                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
                         {% if user.is_authenticated %}
-                            <span class="me-3">Angemeldet als <strong>{{ user.username }}</strong></span>
+                            <span class="me-3 mb-2 mb-md-0">Angemeldet als <strong>{{ user.username }}</strong></span>
                             <form method="post" action="{% url 'logout' %}" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">
@@ -573,12 +656,14 @@
                                 </button>
                             </form>
                         {% else %}
-                            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">
-                                <i class="fas fa-sign-in-alt me-1"></i>Anmelden
-                            </a>
-                            <a href="{% url 'register' %}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-user-plus me-1"></i>Registrieren
-                            </a>
+                            <div class="d-flex">
+                                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Anmelden
+                                </a>
+                                <a href="{% url 'register' %}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-user-plus me-1"></i>Registrieren
+                                </a>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -590,94 +675,79 @@
 
                     <div class="priority-filter">
                         <h5>Filter:</h5>
-                        <div class="d-flex flex-wrap">
-                            <a href="?priority=heute" class="btn {% if request.GET.priority == 'heute' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="?priority=heute" class="btn btn-sm {% if request.GET.priority == 'heute' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
                                 <i class="fas fa-calendar-day me-1"></i>Heute
                             </a>
-                            <a href="?priority=hoch" class="btn {% if request.GET.priority == 'hoch' %}btn-danger{% else %}btn-outline-danger{% endif %} filter-btn">
-                                <i class="fas fa-arrow-up me-1"></i>Hohe Priorität
+                            <div class="dropdown">
+  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    Priorität filtern
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a class="dropdown-item {% if request.GET.priority == 'hoch' %}active{% endif %}" href="?priority=hoch">
+        <i class="fas fa-arrow-up me-1"></i>Hohe Priorität
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item {% if request.GET.priority == 'mittel' %}active{% endif %}" href="?priority=mittel">
+        <i class="fas fa-arrow-right me-1"></i>Mittlere Priorität
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item {% if request.GET.priority == 'niedrig' %}active{% endif %}" href="?priority=niedrig">
+        <i class="fas fa-arrow-down me-1"></i>Niedrige Priorität
+      </a>
+    </li>
+  </ul>
+</div>
+
+                            <a href="?status=offen" class="btn btn-sm {% if request.GET.status == 'offen' %}btn-success{% else %}btn-outline-success{% endif %} filter-btn">
+                                <i class="fas fa-clock me-1"></i>Offen
                             </a>
-                            <a href="?priority=mittel" class="btn {% if request.GET.priority == 'mittel' %}btn-warning{% else %}btn-outline-warning{% endif %} filter-btn">
-                                <i class="fas fa-arrow-right me-1"></i>Mittlere Priorität
+                            <a href="?status=erledigt" class="btn btn-sm {% if request.GET.status == 'erledigt' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
+                                <i class="fas fa-check me-1"></i>Erledigt
                             </a>
-                            <a href="?priority=niedrig" class="btn {% if request.GET.priority == 'niedrig' %}btn-info{% else %}btn-outline-info{% endif %} filter-btn">
-                                <i class="fas fa-arrow-down me-1"></i>Niedrige Priorität
-                            </a>
-                            <a href="?status=offen" class="btn {% if request.GET.status == 'offen' %}btn-success{% else %}btn-outline-success{% endif %} filter-btn">
-                                <i class="fas fa-clock me-1"></i>Offene Aufgaben
-                            </a>
-                            <a href="?status=erledigt" class="btn {% if request.GET.status == 'erledigt' %}btn-secondary{% else %}btn-outline-secondary{% endif %} filter-btn">
-                                <i class="fas fa-check me-1"></i>Erledigte Aufgaben
-                            </a>
-                            <a href="{% url 'alle_aufgaben' %}" class="btn {% if not request.GET.priority and not request.GET.status %}btn-primary{% else %}btn-outline-primary{% endif %} filter-btn">
+                            <a href="{% url 'alle_aufgaben' %}" class="btn btn-sm {% if not request.GET.priority and not request.GET.status %}btn-primary{% else %}btn-outline-primary{% endif %} filter-btn">
                                 <i class="fas fa-list me-1"></i>Alle
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="header-row">
-                            <tr>
-                                <th><i class="fas fa-tasks me-1"></i>Aufgabe</th>
-                                <th><i class="fas fa-exclamation-circle me-1"></i>Priorität</th>
-                                <th><i class="fas fa-tag me-1"></i>Kategorie</th>
-                                <th><i class="fas fa-calendar-alt me-1"></i>Fällig am</th>
-                                <th><i class="fas fa-bell me-1"></i>Erinnerung</th>
-                                <th><i class="fas fa-info-circle me-1"></i>Status</th>
-                                <th><i class="fas fa-cog me-1"></i>Aktionen</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for task in tasks %}
-                            <tr class="{% if task.is_completed %}completed-task{% elif task.is_overdue %}overdue-task{% endif %}">
-                                <td>
+                <!-- Kartenbasierte Liste für mobile Ansicht -->
+                <div class="task-list">
+                    {% for task in tasks %}
+                    <div class="card mb-3 task-card {% if task.is_completed %}completed-task{% elif task.is_overdue %}overdue-task{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2 ">
+                                <div class="task-checkbox me-2" onclick="toggleTaskStatus(event, '{% url 'complete_task' task.id %}', '{% url 'reactivate_task' task.pk %}')">
+                                    {% if task.is_completed %}
+                                        <i class="fas fa-check-circle text-success task-icon-completed"></i>
+                                    {% else %}
+                                        <i class="far fa-circle task-icon-pending"></i>
+                                    {% endif %}
+                                </div>
+
+                                <h5 class="card-title mb-0 gab-5 task-title" onclick="window.location.href='{% url 'edit_task' task.id %}'">
                                     {% if task.is_completed %}
                                         <s>{{ task.title }}</s>
                                     {% else %}
                                         {{ task.title }}
                                     {% endif %}
-                                </td>
-                                <td>
+                                </h5>
+                                <div class="d-flex flex-wrap gap-3 mb-0">
                                     <span class="badge
                                         {% if task.priority == 'high' %}badge-high
                                         {% elif task.priority == 'medium' %}badge-medium text-dark
                                         {% else %}badge-low{% endif %}">
-                                        {{ task.get_priority_display }}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ task.get_priority_display }}
                                     </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary">{{ task.get_category_display }}</span>
-                                </td>
-                                <!-- Fällig am -->
-<td>
-    {% if task.due_date %}
-        <i class="far fa-calendar me-1"></i>{{ task.due_date|date:"d.m.Y" }}
-    <br><small><i class="far fa-clock me-1"></i>{{ task.due_date|date:"H:i" }}</small>
-        {% if task.is_overdue and not task.is_completed %}
-            <span class="badge bg-danger ms-1">Überfällig</span>
-        {% endif %}
-    {% else %}
-        <span class="text-muted">–</span>
-    {% endif %}
-</td>
 
-<!-- Erinnerung -->
-<td>
-    {% if task.reminder_time %}
-        <i class="far fa-bell me-1"></i>{{ task.reminder_time|date:"d.m.Y" }}
-        <br>
-        <small><i class="far fa-clock me-1"></i>{{ task.reminder_time|date:"H:i" }}</small>
-        {% if task.reminder_sent %}
-            <span class="badge bg-success ms-1">Versendet</span>
-        {% endif %}
-    {% else %}
-        <span class="text-muted">–</span>
-    {% endif %}
-</td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>{{ task.get_category_display }}
+                                    </span>
 
-                                <td>
                                     {% if task.is_completed %}
                                         <span class="badge bg-success">
                                             <i class="fas fa-check me-1"></i>Erledigt
@@ -687,48 +757,60 @@
                                             <i class="fas fa-hourglass-half me-1"></i>Offen
                                         </span>
                                     {% endif %}
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        {% if not task.is_completed %}
-                                            <a href="{% url 'complete_task' task.id %}" class="btn btn-success btn-sm">
-                                                <i class="fas fa-check me-1"></i>Erledigen
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'reactivate_task' task.pk %}" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-redo me-1"></i>Reaktivieren
-                                            </a>
-                                        {% endif %}
-                                        <a href="{% url 'edit_task' task.id %}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-edit me-1"></i>Bearbeiten
-                                        </a>
-                                        <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash me-1"></i>Löschen
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="text-center p-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-tasks fa-3x mb-3"></i>
-                                        <p class="mb-0">Keine Aufgaben gefunden</p>
-                                        <p class="small">Erstellen Sie eine neue Aufgabe, um loszulegen</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
+
+                                    {% if task.is_overdue and not task.is_completed %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Überfällig
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="task-details">
+
+
+                                <div class="task-dates small">
+                                    {% if task.due_date %}
+                                        <div class="mb-1">
+                                            <i class="far fa-calendar me-1"></i>Fällig: {{ task.due_date|date:"d.m.Y" }} {{ task.due_date|date:"H:i" }}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if task.reminder_time %}
+                                        <div>
+                                            <i class="far fa-bell me-1"></i>Erinnerung: {{ task.reminder_time|date:"d.m.Y" }} {{ task.reminder_time|date:"H:i" }}
+                                            {% if task.reminder_sent %}
+                                                <span class="badge bg-success ms-1">Versendet</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center p-5">
+                        <div class="text-muted">
+                            <i class="fas fa-tasks fa-3x mb-3"></i>
+                            <p class="mb-0">Keine Aufgaben gefunden</p>
+                            <p class="small">Erstellen Sie eine neue Aufgabe, um loszulegen</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>       <!-- Benachrichtigungen aktivieren -->
-
+        </div>
     </div>
+
     <button id="installButton" class="btn btn-primary install-button">
-    <i class="fas fa-download me-2"></i>App installieren
-</button>
+        <i class="fas fa-download me-2"></i>App installieren
+    </button>
 
 <script>
 let deferredPrompt;
@@ -751,6 +833,20 @@ window.addEventListener('beforeinstallprompt', (e) => {
         }
     });
 });
+
+// Funktion zum Umschalten des Aufgabenstatus
+function toggleTaskStatus(event, completeUrl, reactivateUrl) {
+    event.stopPropagation();
+    const taskIcon = event.currentTarget.querySelector('i');
+
+    if (taskIcon.classList.contains('fa-circle')) {
+        // Unerledigte Aufgabe abschließen
+        window.location.href = completeUrl;
+    } else if (taskIcon.classList.contains('fa-check-circle')) {
+        // Erledigte Aufgabe reaktivieren
+        window.location.href = reactivateUrl;
+    }
+}
 </script>
 <!-- Service Worker Registration -->
     {% include '_service_worker_registration.html' %}
